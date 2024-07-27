@@ -1,0 +1,25 @@
+name: Click Counter
+
+on:
+  workflow_dispatch:
+    inputs:
+      clicks: { description: "Number of clicks", required: true }
+
+jobs:
+  update-clicks:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Update clicks.txt
+        run: |
+          echo "${GITHUB_EVENT_INPUT_CLICKS}" > clicks.txt
+
+      - name: Commit changes
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git add clicks.txt
+          git commit -m "Update clicks.txt"
+          git push
