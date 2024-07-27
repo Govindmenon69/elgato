@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Click Counter</title>
+</head>
+<body>
+    <h1>Click Counter: <span id="click-count">0</span></h1>
+    <button id="click-button">Click me!</button>
+
+    <script>
+        const clickButton = document.getElementById('click-button');
+        const clickCountElement = document.getElementById('click-count');
+
+        let clickCount = 0;
+
+        clickButton.addEventListener('click', async () => {
+            clickCount++;
+            clickCountElement.innerHTML = clickCount;
+
+            await fetch('https://api.github.com/repos/{your-repo-owner}/{your-repo-name}/dispatches', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer {your-github-token}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    'event_type': 'click',
+                    'client_payload': {}
+                })
+            });
+        });
+
+        async function getClickCount() {
+            const response = await fetch('https://raw.githubusercontent.com/{your-repo-owner}/{your-repo-name}/main/clicks.txt');
+            const count = await response.text();
+            clickCountElement.innerHTML = count;
+            clickCount = parseInt(count);
+        }
+
+        getClickCount();
+    </script>
+</body>
+</html>
